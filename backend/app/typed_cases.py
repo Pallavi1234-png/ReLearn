@@ -1,0 +1,72 @@
+"""Developer-authored typed test cases (NOT real students, NOT from the supplied CSVs).
+They exist because the supplied attempts contain narrated mistakes, not real mathematical working,
+so the rule engine cannot be evaluated on them. Each case: (question, working, final, gold, expected_status).
+question is a question_id from questions.csv or a dict for a custom question."""
+
+DIST = {"id": "CUSTOM-DIST-1", "text": "Solve 3(x + 2) = 15", "expected": "x = 3", "candidates": []}
+DIST2 = {"id": "CUSTOM-DIST-2", "text": "Solve 5(x - 4) = 20", "expected": "x = 8", "candidates": []}
+DIST3 = {"id": "CUSTOM-DIST-3", "text": "Solve 2(x + 7) = 30", "expected": "x = 8", "candidates": []}
+DIST4 = {"id": "CUSTOM-DIST-4", "text": "Solve 4(x + 3) = 28", "expected": "x = 4", "candidates": []}
+
+D, C, I = "diagnosed", "correct", "insufficient"
+CASES = [
+    (DIST, "3x + 2 = 15\n3x = 13\nx = 13/3", "x = 13/3", "EXT-DIST-01", D),
+    (DIST2, "5x - 4 = 20\n5x = 24\nx = 24/5", "x = 24/5", "EXT-DIST-01", D),
+    (DIST3, "2x + 7 = 30\n2x = 23\nx = 23/2", "x = 23/2", "EXT-DIST-01", D),
+    (DIST, "3x + 6 = 15\n3x = 9\nx = 3", "x = 3", None, C),
+    (DIST4, "4x + 12 = 28\n4x = 16\nx = 4", "x = 4", None, C),
+    ("Q10-QE-003", "(x-2)(x-3)=0\nx=2 or x=-3", "x=2, -3", "QE-SIGN-01", D),
+    ("Q10-QE-004", "(x+3)(x+4)=0\nx=3 or x=4", "x=3, 4", "QE-SIGN-01", D),
+    ("Q10-QE-004", "(x+2)(x+6)=0\nx=-2 or x=-6", "x=-2, -6", "QE-FAC-01", D),
+    ("Q10-QE-003", "(x-2)(x-3)=0\nx=2 or x=3", "x=2, 3", None, C),
+    ("Q10-QE-017", "(x-4)(x-5)=0\nx=4 or x=5", "x=4, 5", None, C),
+    ("Q10-QE-006", "D = b² + 4ac\nD = 9 + 4(2)(-2) = -7", "-7", "QE-DISC-01", D),
+    ("Q10-QE-006", "D = b² - 4ac = 9 - 4(2)(-2) = 25", "25", None, C),
+    ("Q10-QE-020", "D = 16 + 4(4)(1) = 32", "32", "QE-DISC-01", D),
+    ("Q10-QE-005", "x = (-7 ± 5)/4", "x=-1/2, -3", "QE-FORM-02", D),
+    ("Q10-QE-005", "x = (7 ± 5)/2", "x=6, 1", "QE-FORM-02", D),
+    ("Q10-QE-005", "x = (7 ± 5)/4", "x=3, 1/2", None, C),
+    ("Q10-QE-019", "D = 16 + 4 = 20\nx = (4 ± 2√5)/2", "x = 2 ± √5", "QE-FORM-02", D),
+    ("Q10-QE-019", "D = 20\nx = (-4 ± 2√5)/2", "x = -2 ± √5", None, C),
+    ("Q10-QE-009", "sum = b/a = -9/2", "-9/2", "QE-VIETA-01", D),
+    ("Q10-QE-009", "sum = -b/a = 9/2", "9/2", None, C),
+    ("Q10-QE-010", "product = -c/a = 2/3", "2/3", "QE-VIETA-02", D),
+    ("Q9-FAC-003", "x² - 25 = (x-5)²", "(x-5)²", "FAC-ID-01", D),
+    ("Q9-FAC-003", "x² - 25 = (x-25)(x+25)", "(x-25)(x+25)", "FAC-ID-01", D),
+    ("Q9-FAC-003", "x² - 5² = (x-5)(x+5)", "(x-5)(x+5)", None, C),
+    ("Q9-FAC-007", "need two numbers: 2 and 6", "(x+2)(x+6)", "FAC-MT-01", D),
+    ("Q9-FAC-007", "3 and 4 multiply to 12 and add to 7", "(x+3)(x+4)", None, C),
+    ("Q9-FAC-008", "pair 4 and 3", "(x+4)(x-3)", "FAC-MT-02", D),
+    ("Q9-FAC-008", "pair 4 and 3 with 4 negative", "(x-4)(x+3)", None, C),
+    ("Q9-FAC-001", "common factor is 6", "6(x+12)", "FAC-CF-01", D),
+    ("Q9-FAC-001", "common factor is 2", "2(3x+6)", "FAC-CF-01", D),
+    ("Q9-FAC-001", "common factor is 6", "6(x+2)", None, C),
+    ("Q9-FAC-006", "(2x)² and 3²", "(2x+3)²", "FAC-ID-03", D),
+    ("Q10-AP-003", "a=3, d=4, n=10\na10 = 3 + 10(4) = 43", "43", "AP-NT-01", D),
+    ("Q10-AP-003", "a=3, d=4, n=10\na10 = 3 + 9(4) = 39", "39", None, C),
+    ("Q10-AP-004", "a=7, d=5, n=20\na20 = 7 + 20(5)", "107", "AP-NT-02", D),
+    ("Q10-AP-006", "a=4, d=3, l=40\nn = (40-4)/3 = 12", "12", "AP-NT-04", D),
+    ("Q10-AP-006", "a=4, d=3, l=40\nn = (40-4)/3 + 1 = 13", "13", None, C),
+    ("Q10-AP-007", "a=2, d=3, n=10\nS = 10/2 [2(2) + 10(3)] = 170", "170", "AP-SUM-01", D),
+    ("Q10-AP-007", "a=2, d=3, n=10\nS = 10[4 + 27] = 310", "310", "AP-SUM-01", D),
+    ("Q10-AP-007", "S = 10/2 [4 + 27] = 155", "155", None, C),
+    ("Q10-AP-002", "d = 5 - 9 = -4", "-4", "AP-D-01", D),
+    ("Q10-AP-002", "d = 9/5", "9/5", "AP-CON-02", D),
+    ("Q10-AP-002", "d = 9 - 5 = 4", "4", None, C),
+    ("Q9-RN-010", "multiply exponents 3 x 4", "2^12", "RN-EXP-01", D),
+    ("Q9-RN-010", "2^3 x 2^4 = 2^7 = 128", "128", None, C),
+    ("Q9-RN-025", "divide the exponents 3 and 2", "5^(3/2)", "RN-EXP-02", D),
+    ("Q9-RN-025", "5^(3-2)", "5", None, C),
+    ("Q9-RN-005", "√50 + √8 = √58", "√58", "RN-SURD-02", D),
+    ("Q9-RN-005", "√50 = 5√2, √8 = 2√2, sum = 7√2", "7√2", None, C),
+    ("Q9-RN-004", "72 is under the root, nothing more to do", "√72", "RN-SURD-01", D),
+    ("Q9-RN-004", "√72 = √(36x2) = 6√2", "6√2", None, C),
+    ("Q9-RN-029", "x = 7", "x=7", "RN-ABS-01", D),
+    ("Q9-RN-029", "x = 7 or x = -7", "x=7 or x=-7", None, C),
+    # abstention cases: no usable evidence
+    ("Q10-QE-003", "", "x=2, 3", None, I),
+    ("Q10-QE-003", "", "x=2, -3", None, I),
+    ("Q10-AP-006", "", "12", None, I),
+    ("Q9-FAC-007", "idk", "idk", None, I),
+    ("Q10-AP-003", "", "43", None, I),
+]
