@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || ''
+const BASE = 'https://relearn-vtwm.onrender.com'
 async function req(path, opts) {
   const r = await fetch(BASE + path, { headers: { 'Content-Type': 'application/json' }, ...opts })
   if (!r.ok) throw new Error((await r.text()) || r.statusText)
